@@ -3,6 +3,7 @@ const db = require("../models");
 const Movie = db.movie;
 const Rate = db.rate;
 const Op = db.Sequelize.Op;
+const Sequelize = require("sequelize");
 // const Movie = db.movie;
 exports.create = (req, res) => {
   // Validate request
@@ -52,7 +53,9 @@ exports.create = (req, res) => {
 };
 
 exports.movies = (req, res) => {
-  Movie.findAll()
+  Movie.findAll({
+    include: [Rate] 
+  })
     .then((data) => {
       res.send(data);
     })
@@ -61,6 +64,8 @@ exports.movies = (req, res) => {
         message:
           err.message || "Some error occurred while retrieving tutorials.",
       });
+    }).error((err)=>{
+      console.log('err----',err.status)
     });
 };
 
