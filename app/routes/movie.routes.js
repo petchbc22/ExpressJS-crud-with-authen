@@ -9,19 +9,15 @@ module.exports = function (app) {
     );
     next();
   });
- // all roles 
-  app.get("/movies",[authJwt.verifyToken], controller.movies);
+  // all roles
+  app.get("/movies", [authJwt.verifyToken], controller.movies);
   // create only roles admin
-  app.post(
-    "/movie",
-    [authJwt.verifyToken, authJwt.isAdmin],
-    controller.create
-  );
+  app.post("/movie", [authJwt.verifyToken, authJwt.isAdmin], controller.create);
   app.get("/movies/:movieId", controller.movie);
-  // update only admin or teamleader 
+  // update only admin or teamleader
   app.put(
     "/movie/:movieId",
-    [authJwt.verifyToken, authJwt.isTeamleader],
+    [authJwt.verifyToken, authJwt.isAdmin, authJwt.isTeamleaderOrAdmin],
     controller.update
   );
   // delete only admin

@@ -2,7 +2,7 @@ const db = require("../models");
 const Rate = db.rate;
 
 exports.rates = (req, res) => {
-    Rate.findAll()
+  Rate.findAll()
     .then((data) => {
       res.send(data);
     })

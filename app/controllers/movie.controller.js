@@ -2,8 +2,9 @@ const db = require("../models");
 
 const Movie = db.movie;
 const Rate = db.rate;
+const MovieRates = db.movieRates;
 const Op = db.Sequelize.Op;
-const Sequelize = require("sequelize");
+const { rate } = require("../models");
 // const Movie = db.movie;
 exports.create = (req, res) => {
   // Validate request
@@ -23,26 +24,27 @@ exports.create = (req, res) => {
 
   // Save Tutorial in the database
   Movie.create(movie)
-    .then(data => {
-      // res.send(data);
-      if (req.body.rates) {
-        Rate.findAll({
-          where: {
-            rateId: {
-              [Op.or]: req.body.rates,
-            },
+    .then((data) => {
+      let movieId = data.dataValues.movieId;
+      Rate.findAll({
+        where: {
+          rateId: {
+            [Op.or]: req.body.rates,
           },
-        }).then((rates) => {
-          data.setRates(rates).then(() => {
-            res.send({ message: "movie create successfully!" });
-          });
+        },
+      }).then((rates) => {
+        let dataMovieRates = rates.map((data) => {
+          return {
+            movieId: movieId,
+            rateId: data.rateId,
+          };
         });
-      } else {
-        // user role = 1
-        data.setRates([1]).then(() => {
-          res.send({ message: "movie create successfully!" });
+        console.log("rates------", dataMovieRates);
+        MovieRates.bulkCreate(dataMovieRates).then((data) => {
+          console.log(data);
+          res.send("create movie successfully.");
         });
-      }
+      });
     })
     .catch((err) => {
       res.status(500).send({
@@ -53,9 +55,8 @@ exports.create = (req, res) => {
 };
 
 exports.movies = (req, res) => {
-  Movie.findAll({
-    include: [Rate] 
-  })
+  Movie.findAll({ include: [{ model: rate}] })
+
     .then((data) => {
       res.send(data);
     })
@@ -64,8 +65,9 @@ exports.movies = (req, res) => {
         message:
           err.message || "Some error occurred while retrieving tutorials.",
       });
-    }).error((err)=>{
-      console.log('err----',err.status)
+    })
+    .error((err) => {
+      console.log("err----", err.status);
     });
 };
 
@@ -90,10 +92,46 @@ exports.update = (req, res) => {
     where: { movieId: id },
   })
     .then((num) => {
+      console.log("numf----", num);
       if (num == 1) {
-        res.send({
-          message: "Movie was updated successfully.",
-        });
+        MovieRates.destroy({
+          where: { movieId: id },
+        })
+          .then((num) => {
+            console.log("num----", num);
+
+            Rate.findAll({
+              where: {
+                rateId: {
+                  [Op.or]: req.body.rates,
+                },
+              },
+            }).then((rates) => {
+              console.log("ratesxxxx=====", rates);
+              let dataMovieRates = rates.map((data) => {
+                return {
+                  movieId: id,
+                  rateId: data.rateId,
+                };
+              });
+              console.log("rates------", dataMovieRates);
+              MovieRates.bulkCreate(dataMovieRates).then((data) => {
+                console.log(data);
+                res.send("update movie successfully.");
+              });
+            });
+            // res.send({
+            //   message: "Movie was deleted successfully!",
+            // });
+          })
+          .catch((err) => {
+            res.status(500).send({
+              message: "Could not update Movie with movieId=" + id,
+            });
+          });
+        // res.send({
+        //   message: "Movie was updated successfully.",
+        // });
       } else {
         res.send({
           message: `Cannot update Movie with MovieId=${id}. Maybe Movie was not found or req.body is empty!`,
@@ -115,9 +153,21 @@ exports.delete = (req, res) => {
   })
     .then((num) => {
       if (num == 1) {
-        res.send({
-          message: "Movie was deleted successfully!",
-        });
+        MovieRates.destroy({
+          where: { movieId: id },
+        }) .then((num) => {
+          if (num == 1) {
+            
+            res.send({
+              message: "Movie was deleted successfully!",
+            });
+          } else {
+            res.send({
+              message: `Cannot delete Movie with movieId=${id}. Maybe Movie was not found!`,
+            });
+          }
+        })
+      
       } else {
         res.send({
           message: `Cannot delete Movie with movieId=${id}. Maybe Movie was not found!`,
