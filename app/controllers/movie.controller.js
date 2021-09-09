@@ -39,10 +39,10 @@ exports.create = (req, res) => {
             rateId: data.rateId,
           };
         });
-        console.log("rates------", dataMovieRates);
         MovieRates.bulkCreate(dataMovieRates).then((data) => {
-          console.log(data);
-          res.send("create movie successfully.");
+          res.send({
+            message:"create movie successfully."
+          });
         });
       });
     })
@@ -67,14 +67,13 @@ exports.movies = (req, res) => {
       });
     })
     .error((err) => {
-      console.log("err----", err.status);
     });
 };
 
 exports.movie = (req, res) => {
   const id = req.params.movieId;
 
-  Movie.findByPk(id)
+  Movie.findByPk(id,{ include: [{ model: rate}] })
     .then((data) => {
       res.send(data);
     })
@@ -92,13 +91,11 @@ exports.update = (req, res) => {
     where: { movieId: id },
   })
     .then((num) => {
-      console.log("numf----", num);
       if (num == 1) {
         MovieRates.destroy({
           where: { movieId: id },
         })
           .then((num) => {
-            console.log("num----", num);
 
             Rate.findAll({
               where: {
@@ -107,16 +104,13 @@ exports.update = (req, res) => {
                 },
               },
             }).then((rates) => {
-              console.log("ratesxxxx=====", rates);
               let dataMovieRates = rates.map((data) => {
                 return {
                   movieId: id,
                   rateId: data.rateId,
                 };
               });
-              console.log("rates------", dataMovieRates);
               MovieRates.bulkCreate(dataMovieRates).then((data) => {
-                console.log(data);
                 res.send("update movie successfully.");
               });
             });
