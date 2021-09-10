@@ -12,7 +12,11 @@ module.exports = function (app) {
   // all roles
   app.get("/movies", [authJwt.verifyToken], controller.movies);
   // create only roles admin
-  app.post("/movie", [authJwt.verifyToken, authJwt.isAdmin], controller.create);
+  app.post(
+    "/movie",
+    [authJwt.verifyToken, authJwt.isAdmin, authJwt.isTeamleaderOrAdmin],
+    controller.create
+  );
   app.get("/movies/:movieId", controller.movie);
   // update only admin or teamleader
   app.put(

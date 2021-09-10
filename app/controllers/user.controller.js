@@ -16,6 +16,10 @@ exports.teamleaderBoard = (req, res) => {
   res.status(200).send("Teamleader Content.");
 };
 
+exports.adminandteamleaderBoard = (req, res) => {
+  res.status(200).send("Admin || Teamleader Content.");
+};
+
 exports.allMovie = (req, res) => {
   res.status(200).send("allMovie");
 };
