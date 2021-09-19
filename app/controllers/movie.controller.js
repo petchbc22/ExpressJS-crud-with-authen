@@ -55,7 +55,11 @@ exports.create = (req, res) => {
 };
 
 exports.movies = (req, res) => {
-  Movie.findAll({ include: [{ model: rate}] })
+
+  const movieName = req.query.movieName;
+  var condition = movieName ? { movieName: { [Op.like]: `%${movieName}%` } } : null;
+
+  Movie.findAll({ where: condition, include: [{ model: rate}] })
 
     .then((data) => {
       res.send(data);
@@ -69,6 +73,7 @@ exports.movies = (req, res) => {
     .error((err) => {
     });
 };
+
 
 exports.movie = (req, res) => {
   const id = req.params.movieId;
