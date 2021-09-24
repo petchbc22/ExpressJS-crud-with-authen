@@ -5,5 +5,5 @@ Hi! i'm Jr.Developer am Developing mini project CRUD Movie and Login System with
 # Library
 
 **Front-end** : ReactJS, Redux, ReduxThunk, Axios, Reactstrap, ReactHookForm, Yup,  ReactRouterDom, ReactToastify, SweetAlert, ReactValidation
-**Back-end** : ExpressJS, Sequelize, BcryptJS, JWT, Nodemon
-**Db** : MySQL
+<br /> **Back-end** : ExpressJS, Sequelize, BcryptJS, JWT, Nodemon
+<br /> **Db** : MySQL
