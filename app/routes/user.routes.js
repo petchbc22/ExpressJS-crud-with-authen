@@ -39,4 +39,6 @@ module.exports = function(app) {
     [authJwt.verifyToken, authJwt.isTeamleaderOrAdmin],
     controller.adminandteamleaderBoard
   );
+
+  app.post("/updateuser", [authJwt.verifyToken], controller.updatePassword);
 };

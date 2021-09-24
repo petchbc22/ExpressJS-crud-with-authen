@@ -3,6 +3,7 @@ const db = require("../models");
 const Movie = db.movie;
 const Rate = db.rate;
 const MovieRates = db.movieRates;
+
 const Op = db.Sequelize.Op;
 const { rate } = require("../models");
 // const Movie = db.movie;
