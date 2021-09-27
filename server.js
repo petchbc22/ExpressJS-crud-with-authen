@@ -5,7 +5,8 @@ const cors = require("cors");
 const app = express();
 
 var corsOptions = {
-  origin: "http://localhost:8081"
+  // origin: "http://localhost:8081"
+  origin : "https://reactjs-movies-crud.herokuapp.com"
 };
 
 app.use(cors(corsOptions));
